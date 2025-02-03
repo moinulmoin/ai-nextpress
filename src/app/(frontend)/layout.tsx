@@ -1,4 +1,4 @@
-import Navbar from '@/components/navbar'
+import { Navbar } from '@/components/navbar'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Geist } from 'next/font/google'
 import React from 'react'
@@ -18,7 +18,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
     <html lang="en">
       <body className={geist.className}>
         <main>
-          <div className="min-h-screen flex flex-col p-6 justify-center items-center max-w-xl mx-auto">
+          <div className="min-h-screen flex flex-col p-6 justify-center items-center max-w-4xl mx-auto">
             <Card className="w-full">
               <CardHeader>
                 <Navbar />

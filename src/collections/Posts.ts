@@ -2,6 +2,12 @@ import type { CollectionConfig } from 'payload'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
+  access: {
+    create: () => true,
+    read: () => true,
+    update: () => true,
+    delete: () => true,
+  },
   fields: [
     {
       name: 'title',
@@ -10,11 +16,6 @@ export const Posts: CollectionConfig = {
     {
       name: 'content',
       type: 'text',
-    },
-    {
-      name: 'published',
-      type: 'checkbox',
-      defaultValue: false,
     },
   ],
 }

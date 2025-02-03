@@ -4,20 +4,50 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { WandSparklesIcon } from 'lucide-react'
+import { Loader2, WandSparklesIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function CreatePage() {
+  const router = useRouter()
   const [formData, setFormData] = useState({
     topic: '',
     tone: '',
     audience: '',
   })
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission here
-    console.log(formData)
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/completion', {
+        method: 'POST',
+        body: JSON.stringify({
+          prompt: `
+          Generate a blog post headline and draft body content about ${formData.topic} in ${formData.tone} tone for ${formData.audience} audience.
+          `,
+        }),
+      })
+      const aiResult = await response.json()
+      const payloadResponse = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: aiResult.post[0].title,
+          content: aiResult.post[0].content,
+        }),
+      })
+      const result = await payloadResponse.json()
+
+      router.push(`/posts/${result.doc.id}`)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -74,8 +104,18 @@ export default function CreatePage() {
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              <WandSparklesIcon /> Generate Draft
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <WandSparklesIcon className="mr-2 h-4 w-4" />
+                  Generate Draft
+                </>
+              )}
             </Button>
           </form>
         </CardContent>

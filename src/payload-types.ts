@@ -82,7 +82,6 @@ export interface Post {
   id: number;
   title?: string | null;
   content?: string | null;
-  published?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -165,7 +164,6 @@ export interface UsersSelect<T extends boolean = true> {
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
   content?: T;
-  published?: T;
   updatedAt?: T;
   createdAt?: T;
 }
