@@ -1,9 +1,14 @@
+import Navbar from '@/components/navbar'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Geist } from 'next/font/google'
 import React from 'react'
 import './styles.css'
 
+const geist = Geist({ subsets: ['latin'] })
+
 export const metadata = {
-  description: 'A blank template using Payload in a Next.js app.',
-  title: 'Payload Blank Template',
+  description: 'AI Powered Content Publishing System',
+  title: 'AI Nextpress',
 }
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
@@ -11,8 +16,17 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
   return (
     <html lang="en">
-      <body>
-        <main>{children}</main>
+      <body className={geist.className}>
+        <main>
+          <div className="min-h-screen flex flex-col p-6 justify-center items-center max-w-xl mx-auto">
+            <Card className="w-full">
+              <CardHeader>
+                <Navbar />
+              </CardHeader>
+              <CardContent className="">{children}</CardContent>
+            </Card>
+          </div>
+        </main>
       </body>
     </html>
   )
