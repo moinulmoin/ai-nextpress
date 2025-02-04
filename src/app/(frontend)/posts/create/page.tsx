@@ -1,6 +1,6 @@
 'use client'
 
-import { blogDraftSchema } from '@/app/(payload)/api/completion/route'
+import { blogDraftSchema } from '@/app/(payload)/api/completion/schema'
 import { postFormSchema } from '@/lib/validations/post'
 import { postsService } from '@/services/posts'
 import { experimental_useObject as useObject } from 'ai/react'
