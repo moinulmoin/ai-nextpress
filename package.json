@@ -18,7 +18,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^1.1.9",
     "@hookform/resolvers": "^3.10.0",
-    "@payloadcms/db-postgres": "latest",
+    "@payloadcms/db-vercel-postgres": "^3.20.0",
     "@payloadcms/next": "latest",
     "@payloadcms/richtext-lexical": "latest",
     "@radix-ui/react-label": "^2.1.1",
@@ -59,7 +59,8 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "sharp"
+      "sharp",
+      "esbuild"
     ]
   }
 }
