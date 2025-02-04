@@ -1,28 +1,32 @@
-import { getPayload } from 'payload'
+'use client'
 
 import { PostCard } from '@/components/postcard'
+import { SkeletonLoader } from '@/components/skeleton-loader'
 import { buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import config from '@/payload.config'
+import { Post } from '@/payload-types'
 import Link from 'next/link'
+import useSWR from 'swr'
 
-export default async function HomePage() {
-  const payloadConfig = await config
-  const payload = await getPayload({ config: payloadConfig })
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
-  const posts = await payload
-    .find({
-      collection: 'posts',
-      limit: 10,
-    })
-    .catch(() => ({ docs: [] }))
+export default function HomePage() {
+  const { data: posts, error, isLoading } = useSWR('/api/posts', fetcher)
+
+  if (error) {
+    return <div>Failed to load posts</div>
+  }
+
+  if (isLoading) {
+    return <SkeletonLoader />
+  }
 
   return (
     <div className="grid gap-6">
-      {posts.docs.length > 0 ? (
+      {posts?.docs?.length > 0 ? (
         <div className="flex flex-col gap-6 w-full">
-          {posts.docs.map((post) => (
+          {posts.docs.map((post: Post) => (
             <PostCard key={post.id} id={'' + post.id} title={post.title ?? ''} />
           ))}
         </div>

@@ -7,6 +7,39 @@ import { Label } from '@/components/ui/label'
 import { Loader2, WandSparklesIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { mutate } from 'swr'
+import useSWRMutation from 'swr/mutation'
+
+// Create post mutation
+async function createPost(url: string, { arg }: { arg: { title: string; content: string } }) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(arg),
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to create post')
+  }
+
+  return response.json()
+}
+
+// AI completion mutation
+async function generateContent(url: string, { arg }: { arg: { prompt: string } }) {
+  const response = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(arg),
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to generate content')
+  }
+
+  return response.json()
+}
 
 export default function CreatePage() {
   const router = useRouter()
@@ -15,38 +48,42 @@ export default function CreatePage() {
     tone: '',
     audience: '',
   })
-  const [isLoading, setIsLoading] = useState(false)
+
+  // Setup mutations
+  const { trigger: triggerAI, isMutating: isGenerating } = useSWRMutation(
+    '/api/completion',
+    generateContent,
+  )
+  const { trigger: triggerCreate, isMutating: isCreating } = useSWRMutation(
+    '/api/posts',
+    createPost,
+  )
+
+  const isLoading = isGenerating || isCreating
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
     try {
-      const response = await fetch('/api/completion', {
-        method: 'POST',
-        body: JSON.stringify({
-          prompt: `
+      // Generate content with AI
+      const aiResult = await triggerAI({
+        prompt: `
           Generate a blog post headline and draft body content about ${formData.topic} in ${formData.tone} tone for ${formData.audience} audience.
-          `,
-        }),
+        `,
       })
-      const aiResult = await response.json()
-      const payloadResponse = await fetch('/api/posts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: aiResult.post[0].title,
-          content: aiResult.post[0].content,
-        }),
-      })
-      const result = await payloadResponse.json()
 
+      // Create post with generated content
+      const result = await triggerCreate({
+        title: aiResult.post[0].title,
+        content: aiResult.post[0].content,
+      })
+
+      // Revalidate the posts list
+      mutate('/api/posts')
+
+      // Redirect to the new post
       router.push(`/posts/${result.doc.id}`)
     } catch (error) {
-      console.error(error)
-    } finally {
-      setIsLoading(false)
+      console.error('Error creating post:', error)
     }
   }
 
@@ -59,7 +96,7 @@ export default function CreatePage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="">
       <Card>
         <CardHeader>
           <CardTitle className="text-3xl">Create New Post</CardTitle>
@@ -108,7 +145,7 @@ export default function CreatePage() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating...
+                  {isGenerating ? 'Generating...' : 'Saving...'}
                 </>
               ) : (
                 <>

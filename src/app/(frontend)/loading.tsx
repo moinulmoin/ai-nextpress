@@ -1,5 +1,5 @@
-import { Skeleton } from '@/components/ui/skeleton'
+import { SkeletonLoader } from '@/components/skeleton-loader'
 
 export default function Loading() {
-  return <Skeleton className="h-40 w-full" />
+  return <SkeletonLoader />
 }

@@ -18,13 +18,12 @@ async function SinglePostPage({ params }: { params: Promise<{ id: string }> }) {
     return notFound()
   }
 
-  console.log('post', post)
   return (
     <div className="">
       <h1 className="text-3xl font-semibold mb-6">{post.title}</h1>
-      <p className=" prose">
+      <div className=" prose">
         <Markdown>{post.content}</Markdown>
-      </p>
+      </div>
     </div>
   )
 }
