@@ -14,7 +14,7 @@ const navItems = [
 
 export function Navbar() {
   const pathname = usePathname()
-
+  const isHome = pathname === '/'
   return (
     <nav className="flex justify-between items-center">
       <div className="flex gap-4">
@@ -31,6 +31,9 @@ export function Navbar() {
           </Link>
         ))}
       </div>
+      <Link href="/posts/create" className={cn(buttonVariants(), !isHome && 'hidden')}>
+        Create Post
+      </Link>
     </nav>
   )
 }

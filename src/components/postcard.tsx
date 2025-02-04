@@ -40,7 +40,7 @@ export function PostCard({ id, title }: PostCardProps) {
   return (
     <div className="flex items-center justify-between gap-4 w-full">
       <Link href={`/posts/${id}`} className="underline underline-offset-4 hover:text-primary">
-        <h2 className="text-lg font-medium">{title}</h2>
+        <h2 className="text-lg">{title}</h2>
       </Link>
       <Button
         variant="ghost"

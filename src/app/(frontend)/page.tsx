@@ -1,21 +1,27 @@
 'use client'
 
+import { ErrorCard } from '@/components/error-card'
 import { PostCard } from '@/components/postcard'
 import { SkeletonLoader } from '@/components/skeleton-loader'
 import { buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { Post } from '@/payload-types'
+import { postsService } from '@/services/posts'
 import Link from 'next/link'
 import useSWR from 'swr'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
 export default function HomePage() {
-  const { data: posts, error, isLoading } = useSWR('/api/posts', fetcher)
+  const { data: posts, error, isLoading } = useSWR('/api/posts', postsService.getAllPosts)
 
   if (error) {
-    return <div>Failed to load posts</div>
+    return (
+      <ErrorCard
+        title="Error Loading Posts"
+        message={error.message || 'Failed to load posts. Please try again.'}
+        retry={() => window.location.reload()}
+      />
+    )
   }
 
   if (isLoading) {
